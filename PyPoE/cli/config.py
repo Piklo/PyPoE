@@ -90,20 +90,8 @@ class ConfigHelper(ConfigObj):
     Generally the new options should be used over the direct usage of inherited
     functions.
     """
-    def __init__(self, *args, **kwargs):
-        """
-        Raises
-        ------
-        ValueError
-            if the infile :py:class:`configobj.ConfigObj` parameter is not
-            specified
-
-        """
-        if 'infile' not in kwargs:
-            raise ValueError('Must be initialized with infile')
-        kwargs['raise_errors'] = True
-        kwargs['configspec'] = ConfigObj()
-        ConfigObj.__init__(self, *args, **kwargs)
+    def __init__(self, infile):
+        ConfigObj.__init__(self, infile=infile, raise_errors=True, configspec=ConfigObj())
 
         # Fix missing main sections
         for item in ['Config', 'Setup']:

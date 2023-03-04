@@ -49,7 +49,7 @@ __all__ = ['CONFIG_PATH', 'config']
 
 CONFIG_PATH = os.path.join(APP_DIR, 'exporter.conf')
 
-config = ConfigHelper(infile=CONFIG_PATH)
+config = ConfigHelper(CONFIG_PATH)
 
 # =============================================================================
 # Init
