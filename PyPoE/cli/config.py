@@ -48,9 +48,11 @@ See PyPoE/LICENSE
 # Python
 import sys
 from collections.abc import Iterable
+from typing import Any, Callable
 
 # 3rd party
 from configobj import ConfigObj
+import configobj
 from validate import Validator
 
 # self
@@ -90,22 +92,25 @@ class ConfigHelper(ConfigObj):
     Generally the new options should be used over the direct usage of inherited
     functions.
     """
-    def __init__(self, infile):
+    def __init__(self, infile: str) -> None:
         ConfigObj.__init__(self, infile=infile, raise_errors=True, configspec=ConfigObj())
 
         # Fix missing main sections
         for item in ['Config', 'Setup']:
             if item not in self:
                 self.update({item: {}})
+            
+            if self.configspec is None:
+                raise TypeError("configspec is None")
             if item not in self.configspec:
                 self.configspec.update({item: {}})
 
         self.validator = Validator()
         self.validator.functions.update(functions)
-        self._listeners = {}
+        self._listeners: dict[str, list[Callable[[Any, Any, Any], Any]]] = {}
 
     @property
-    def option(self):
+    def option(self) -> configobj.Section:
         """
         Returns config option section from the config handler.
 
@@ -113,10 +118,14 @@ class ConfigHelper(ConfigObj):
         -------
         configobj.Section
         """
-        return self['Config']
+        config = self['Config'] # type: ignore
+        if not isinstance(config, configobj.Section):
+            raise TypeError("config option section is not of type configobj.Section")
+
+        return config
 
     @property
-    def optionspec(self):
+    def optionspec(self) -> configobj.Section:
         """
         Returns config option specification section from the config handler.
 
@@ -124,10 +133,18 @@ class ConfigHelper(ConfigObj):
         -------
         configobj.Section
         """
-        return self.configspec['Config']
+        configspec = self.configspec
+        if configspec is None:
+            raise TypeError("configspec is None")
+        
+        config = configspec['Config'] # type: ignore
+        if not isinstance(config, configobj.Section):
+            raise TypeError("config option specification section is not of type configobj.Section")
+
+        return config
 
     @property
-    def setup(self):
+    def setup(self) -> configobj.Section:
         """
         Returns config setup section from the config handler.
 
@@ -135,10 +152,14 @@ class ConfigHelper(ConfigObj):
         -------
         configobj.Section
         """
-        return self['Setup']
+        config = self['Setup'] # type: ignore
+        if not isinstance(config, configobj.Section):
+            raise TypeError("config setup section is not of type configobj.Section")
+
+        return config
 
     @property
-    def setupspec(self):
+    def setupspec(self) -> configobj.Section:
         """
         Returns config setup specification section from the config handler.
 
@@ -146,9 +167,17 @@ class ConfigHelper(ConfigObj):
         -------
         configobj.Section
         """
-        return self.configspec['Setup']
+        configspec = self.configspec
+        if configspec is None:
+            raise TypeError("configspec is None")
+        
+        config = configspec['Setup'] # type: ignore
+        if not isinstance(config, configobj.Section):
+            raise TypeError("config setup specification section is not of type configobj.Section")
 
-    def add_option(self, key, specification):
+        return config
+
+    def add_option(self, key: str, specification: str) -> None:
         """
         Adds (registers) a new config option with the specified key and
         specification.
@@ -169,7 +198,7 @@ class ConfigHelper(ConfigObj):
             raise KeyError('Duplicate key: %s' % key)
         self.optionspec[key] = specification
 
-    def get_option(self, key, safe=True):
+    def get_option(self, key: str, safe: bool=True) -> Any:
         """
         Returns the handled value for the specified key from the config.
 
@@ -200,7 +229,10 @@ class ConfigHelper(ConfigObj):
             if the setup for the key was not performed
         """
         if safe and key in self.setup:
-            if not self.setup[key]['performed']:
+            section = self.setup[key] # type: ignore
+            if not isinstance(section, configobj.Section):
+                raise TypeError(f"setup[{key}] section is not of type configobj.Section")
+            if not section['performed']:
                 raise SetupError('Setup not performed.')
         try:
             value = self.option[key]
@@ -214,7 +246,7 @@ class ConfigHelper(ConfigObj):
 
         return self.validator.check(self.optionspec[key], value)
 
-    def set_option(self, key, value):
+    def set_option(self, key: str, value: Any) -> None:
         """
         Sets the key to the specified value.
 
@@ -235,7 +267,10 @@ class ConfigHelper(ConfigObj):
             if the validation of the value failed
         """
         if key in self.setup:
-            self.setup[key]['performed'] = False
+            section = self.setup[key] # type: ignore
+            if not isinstance(section, configobj.Section):
+                raise TypeError(f"setup[{key}] section is not of type configobj.Section")
+            section['performed'] = False
 
         # Raise ValidationError
         value = self.validator.check(self.optionspec[key], value)
@@ -246,7 +281,7 @@ class ConfigHelper(ConfigObj):
 
         self.option[key] = value
 
-    def register_setup(self, key, funcs):
+    def register_setup(self, key: str, funcs: Callable[[Any], Any] | Iterable[Callable[[Any], Any]]) -> None:
         """
         Registers one or multiple functions that will be called to perform
         the setup for the specified config key.
@@ -295,7 +330,7 @@ class ConfigHelper(ConfigObj):
 
         self.setup[key].functions = funcs
 
-    def add_setup_listener(self, config_key, function):
+    def add_setup_listener(self, config_key: str, function: Callable[[Any, Any, Any], Any]) -> None:
         """
         Adds a listener for the specified config key that triggers when the
         config value was changed.
@@ -325,7 +360,7 @@ class ConfigHelper(ConfigObj):
         else:
             self._listeners[config_key] = [function, ]
 
-    def add_setup_variable(self, setup_key, variable_key, specification):
+    def add_setup_variable(self, setup_key: str, variable_key: str, specification: str) -> None:
         """
         Adds a setup variable, i.e. a variable related to a specific setup
 
@@ -353,9 +388,14 @@ class ConfigHelper(ConfigObj):
             raise KeyError('Setup key "%s" is invalid' % setup_key)
         if variable_key in self.setupspec[setup_key]:
             raise KeyError('Duplicate key: %s' % variable_key)
-        self.setupspec[setup_key][variable_key] = specification
+        
+        section = self.setupspec[setup_key] # type: ignore
+        if not isinstance(section, configobj.Section):
+            raise TypeError(f"setupspec[{setup_key}] section is not of type configobj.Section")
+        
+        section[variable_key] = specification
 
-    def get_setup_variable(self, setup_key, variable_key):
+    def get_setup_variable(self, setup_key: str, variable_key: str) -> Any:
         """
         Returns the stored variable for the specified setup key
 
@@ -371,9 +411,13 @@ class ConfigHelper(ConfigObj):
         object
             the value of the variable
         """
-        return self.setup[setup_key][variable_key]
+        section = self.setup[setup_key] # type: ignore
+        if not isinstance(section, configobj.Section):
+            raise TypeError(f"setup[{setup_key}] section is not of type configobj.Section")
+        
+        return section[variable_key]
 
-    def set_setup_variable(self, setup_key, variable_key, value):
+    def set_setup_variable(self, setup_key: str, variable_key: str, value: Any) -> None:
         """
         Sets the value for the specified setup key and variable
 
@@ -393,10 +437,17 @@ class ConfigHelper(ConfigObj):
 
         """
         # Raise ValidationError
-        value = self.validator.check(self.setupspec[setup_key][variable_key], value)
-        self.setup[setup_key][variable_key] = value
+        setupspecsection = self.setupspec[setup_key] # type: ignore
+        if not isinstance(setupspecsection, configobj.Section):
+            raise TypeError(f"setupspec[{setup_key}] section is not of type configobj.Section")
+        value = self.validator.check(setupspecsection[variable_key], value)
+        
+        setupsection = self.setup[setup_key] # type: ignore
+        if not isinstance(setupsection, configobj.Section):
+            raise TypeError(f"setup[{setup_key}] section is not of type configobj.Section")
+        setupsection[variable_key] = value
 
-    def needs_setup(self, key):
+    def needs_setup(self, key: str) -> bool:
         """
         Returns whether the specified config key requires setup or not.
 
@@ -418,7 +469,7 @@ class ConfigHelper(ConfigObj):
         """
         return key in self.setup
 
-    def is_setup(self, variable):
+    def is_setup(self, variable: str) -> bool:
         """
         Returns whether the specified config key has it's setup performed
 
@@ -432,9 +483,17 @@ class ConfigHelper(ConfigObj):
         bool
             True if setup is performed
         """
-        return self.setup[variable]['performed']
+        section = self.setup[variable] # type: ignore
+        if not isinstance(section, configobj.Section):
+            raise TypeError(f"setup[{variable}] section is not of type configobj.Section")
+        
+        value = section['performed'] # type: ignore
+        if not isinstance(value, bool):
+            raise TypeError(f"section['performed'] section is not of type bool")
 
-    def setup_or_raise(self, variable):
+        return value
+
+    def setup_or_raise(self, variable: str) -> bool:
         """
         Returns True if setup is performed for the specified config variable
         and raises an error if it isn't.
