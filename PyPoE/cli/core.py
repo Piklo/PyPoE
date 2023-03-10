@@ -53,14 +53,21 @@ Functions
 # =============================================================================
 
 # Python
+import argparse
 import sys
 import traceback
+from typing import Any, Callable, TextIO, Type
+import typing
 import warnings
 from enum import Enum
 from time import strftime
 
 # 3rd Party
 from colorama import Style, Fore
+
+# self
+if typing.TYPE_CHECKING:
+    from PyPoE.cli.config import ConfigHelper
 
 # =============================================================================
 # Globals
@@ -95,13 +102,13 @@ class OutputHook:
     """
     Warning hook to reformat / restyle warning messages properly.
     """
-    def __init__(self, show_warning):
+    def __init__(self, show_warning: Callable[[Warning | str, Type[Warning], str, int, TextIO | None, str | None], None]):
         self._orig_show_warning = show_warning
         self._orig_format_warning = warnings.formatwarning
         warnings.formatwarning = self.format_warning
         warnings.showwarning = self.show_warning
 
-    def format_warning(self, message, category, filename, lineno, line=None):
+    def format_warning(self, message: Warning | str, category: Type[Warning], filename: str, lineno: int, line: str | None = None):
         kwargs = {
             'message': message,
             'category': category.__name__,
@@ -112,7 +119,7 @@ class OutputHook:
         f = "%(filename)s:%(lineno)s:\n%(category)s: %(message)s\n" % kwargs
         return console(f, msg=Msg.warning, rtr=True)
     #
-    def show_warning(self, *args, **kwargs):
+    def show_warning(self, *args: Any, **kwargs: Any) -> None:
         self._orig_show_warning(*args, **kwargs)
 
 # =============================================================================
@@ -120,7 +127,7 @@ class OutputHook:
 # =============================================================================
 
 
-def run(parser, config):
+def run(parser: argparse.ArgumentParser, config: "ConfigHelper"):
     """
     Run the CLI application with the given parser and config.
 
@@ -155,7 +162,7 @@ def run(parser, config):
     sys.exit(code)
 
 
-def console(message, msg=Msg.default, rtr=False, raw=False):
+def console(message: str, msg: Msg = Msg.default, rtr: bool = False, raw: bool = False) -> str | None:
     """
     Send the specified messge to console
 
