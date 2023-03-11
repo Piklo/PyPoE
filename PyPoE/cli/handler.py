@@ -46,7 +46,7 @@ from validate import ValidateError
 
 # self
 from PyPoE.cli.config import ConfigError
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 
 # =============================================================================
 # Globals

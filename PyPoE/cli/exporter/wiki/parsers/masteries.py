@@ -46,7 +46,7 @@ from collections import OrderedDict
 # 3rd-party
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter.wiki import parser
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult
 from PyPoE.poe.file.psg import PSGFile

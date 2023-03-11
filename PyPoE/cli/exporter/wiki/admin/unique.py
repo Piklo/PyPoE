@@ -50,7 +50,7 @@ from rapidfuzz import fuzz
 # self
 from PyPoE.poe.constants import WORDLISTS
 from PyPoE.poe.file.dat import RelationalReader
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter.wiki.parser import BaseParser
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, add_parser_arguments, WIKIS
 

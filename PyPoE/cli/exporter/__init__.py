@@ -39,7 +39,7 @@ from colorama import init
 # self
 from PyPoE import APP_DIR
 from PyPoE.cli.config import ConfigHelper
-from PyPoE.cli.core import OutputHook
+from PyPoE.cli.message import OutputHook
 
 # =============================================================================
 # Globals

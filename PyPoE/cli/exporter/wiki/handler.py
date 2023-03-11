@@ -47,7 +47,7 @@ except Exception as e:
 
 # self
 from PyPoE import __version__
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.handler import BaseHandler
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.util import fix_path

@@ -45,7 +45,7 @@ from collections import OrderedDict
 from dds import decode_dds
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.wiki import parser
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult

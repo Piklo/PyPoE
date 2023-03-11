@@ -59,7 +59,7 @@ from collections import OrderedDict
 from PyPoE.shared.mixins import ReprMixin
 from PyPoE.poe.file.shared import AbstractFileReadOnly
 from PyPoE.poe.file.dat import DatFile, RelationalReader
-from PyPoE.cli.core import console
+from PyPoE.cli.message import console
 
 # =============================================================================
 # Globals

@@ -34,7 +34,7 @@ import argparse
 from json import dump
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter.dat.handler import DatExportHandler
 
 # =============================================================================

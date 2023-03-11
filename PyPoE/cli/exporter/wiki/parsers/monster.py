@@ -36,7 +36,7 @@ from functools import partialmethod
 from collections import OrderedDict
 
 # Self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult
 from PyPoE.cli.exporter.wiki import parser
 

@@ -36,7 +36,7 @@ import os
 from graphviz import Digraph
 
 # Self
-from PyPoE.cli.core import console
+from PyPoE.cli.message import console
 from PyPoE.cli.exporter.wiki.handler import *
 from PyPoE.cli.exporter.wiki.parser import BaseParser
 

@@ -49,7 +49,7 @@ from PyPoE.cli.exporter.wiki.parsers.itemconstants import MAPS_IN_SERIES_BUT_NOT
 from PyPoE.poe.file.dat import RelationalReader
 from PyPoE.poe.file.it import ITFile
 from PyPoE.poe.sim.formula import gem_stat_requirement, GemTypes
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult
 from PyPoE.cli.exporter.wiki import parser

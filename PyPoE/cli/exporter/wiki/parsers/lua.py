@@ -39,7 +39,7 @@ from functools import partial
 # Self
 from PyPoE.poe.constants import RARITY
 from PyPoE.poe.text import parse_description_tags
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult
 from PyPoE.cli.exporter.wiki.parser import BaseParser, TagHandler

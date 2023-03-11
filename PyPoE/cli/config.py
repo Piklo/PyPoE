@@ -56,7 +56,7 @@ import configobj
 from validate import Validator
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.shared.config.validator import functions
 
 # =============================================================================

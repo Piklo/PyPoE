@@ -32,7 +32,7 @@ See PyPoE/LICENSE
 # Python
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.handler import BaseHandler
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.wiki.parsers import WIKI_HANDLERS

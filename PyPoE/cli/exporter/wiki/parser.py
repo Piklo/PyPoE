@@ -63,7 +63,7 @@ from functools import partial
 from dds import decode_dds
 
 # self
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.util import get_content_path, fix_path
 from PyPoE.poe.constants import MOD_DOMAIN, WORDLISTS, MOD_STATS_RANGE

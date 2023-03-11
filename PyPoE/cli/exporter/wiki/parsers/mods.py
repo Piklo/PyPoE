@@ -44,7 +44,7 @@ from functools import partialmethod
 from PyPoE.poe import text
 from PyPoE.poe.constants import \
     MOD_DOMAIN, MOD_GENERATION_TYPE, MOD_STATS_RANGE, MOD_SELL_PRICES
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.wiki.handler import ExporterHandler, ExporterResult
 from PyPoE.cli.exporter.wiki.parser import BaseParser, WikiCondition

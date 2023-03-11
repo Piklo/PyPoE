@@ -37,7 +37,7 @@ from tqdm import tqdm
 # self
 from PyPoE.poe.constants import VERSION
 from PyPoE.poe.file import dat
-from PyPoE.cli.core import console, Msg
+from PyPoE.cli.message import console, Msg
 from PyPoE.cli.exporter import config
 from PyPoE.cli.exporter.util import get_content_path
 from PyPoE.poe.file.file_system import FileSystem
