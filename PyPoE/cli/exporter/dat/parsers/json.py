@@ -32,9 +32,10 @@ See PyPoE/LICENSE
 # Python
 import argparse
 from json import dump
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 # self
-from PyPoE.cli.message import console, Msg
+from PyPoE.cli.message import console
 from PyPoE.cli.exporter.dat.handler import DatExportHandler
 
 # =============================================================================
@@ -47,9 +48,13 @@ __all__ = ['JSONExportHandler']
 # Classes
 # =============================================================================
 
+if TYPE_CHECKING:
+    SubparserTAlias: TypeAlias = argparse._SubParsersAction[argparse.ArgumentParser] # pyright: ignore [reportPrivateUsage]
+else:
+    SubparserTAlias = Any
 
 class JSONExportHandler(DatExportHandler):
-    def __init__(self, sub_parser):
+    def __init__(self, sub_parser: SubparserTAlias):
         """
 
         :type sub_parser: argparse._SubParsersAction
@@ -96,7 +101,7 @@ class JSONExportHandler(DatExportHandler):
 
         self.add_default_arguments(self.json)
 
-    def handle(self, args):
+    def handle(self, args: argparse.Namespace) -> None:
         super().handle(args)
 
         dict_spec = args.spec.as_dict()
