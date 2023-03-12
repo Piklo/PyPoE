@@ -32,6 +32,8 @@ See PyPoE/LICENSE
 # Python
 
 # 3rd-party
+from argparse import ArgumentParser
+import argparse
 from tqdm import tqdm
 
 # self
@@ -54,7 +56,7 @@ __all__ = []
 
 
 class DatExportHandler:
-    def add_default_arguments(self, parser):
+    def add_default_arguments(self, parser: ArgumentParser):
         """
 
         :param parser:
@@ -76,7 +78,7 @@ class DatExportHandler:
             default=None,
         )
 
-    def handle(self, args):
+    def handle(self, args: argparse.Namespace):
         ver = config.get_option('version')
 
         if ver != VERSION.DEFAULT:
@@ -87,7 +89,7 @@ class DatExportHandler:
         if args.files is None:
             args.files = list(spec)
         else:
-            files = set()
+            files: set[str] = set()
 
             for file_name in args.files:
                 if file_name in spec:
@@ -99,13 +101,13 @@ class DatExportHandler:
                     else:
                         files.add(file_name)
 
-            files = list(files)
-            files.sort()
-            args.files = files
+            files_list = list(files)
+            files_list.sort()
+            args.files = files_list
 
         args.spec = spec
 
-    def _read_dat_files(self, args, prefix=''):
+    def _read_dat_files(self, args: argparse.Namespace, prefix: str=''):
         path = get_content_path()
 
         console(prefix + 'Loading file system...')
@@ -114,13 +116,13 @@ class DatExportHandler:
         
         console(prefix + 'Reading .dat files')
 
-        dat_files = {}
+        dat_files:dict[str, dat.DatFile] = {}
         lang = args.language or config.get_option('language')
         dir_path = "Data/"
         if lang != 'English':
             #ggpk_data = index.get_dir_record("Data/%s" % lang)
             dir_path = "Data/%s/" % lang
-        remove = []
+        remove: list[str] = []
         for name in tqdm(args.files):
             file_path = dir_path + name + '64'
             try:
