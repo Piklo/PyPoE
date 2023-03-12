@@ -170,9 +170,9 @@ def test_load():
 
 
 def test_reload_default_spec():
-    old = dat._default_spec
+    old = dat.default_spec
     dat.set_default_spec(reload=True)
-    assert id(old) != id(dat._default_spec), 'Specification wasn\'t reloaded'
+    assert id(old) != id(dat.default_spec), 'Specification wasn\'t reloaded'
 
 #
 # DatValue

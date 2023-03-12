@@ -83,7 +83,7 @@ class DatExportHandler:
             console('Loading specification for %s' % ver)
             dat.set_default_spec(version=ver)
 
-        spec = dat._default_spec
+        spec = dat.default_spec
         if args.files is None:
             args.files = list(spec)
         else:

@@ -76,6 +76,8 @@ from io import BytesIO
 from collections import OrderedDict, defaultdict
 from collections.abc import Iterable
 
+from configobj import ConfigObj
+
 # 3rd-party
 
 # self
@@ -92,7 +94,7 @@ from PyPoE.poe.file.specification.errors import SpecificationError, \
 # Globals
 # =============================================================================
 
-_default_spec = None
+default_spec: ConfigObj
 
 __all__ = [
     'DAT_FILE_MAGIC_NUMBER',
@@ -557,8 +559,8 @@ class DatReader(ReprMixin):
 
         # Process specification
         if specification is None:
-            if _file_name in _default_spec:
-                specification = _default_spec[_file_name]
+            if _file_name in default_spec:
+                specification = default_spec[_file_name]
             else:
                 raise SpecificationError(
                     SpecificationError.ERRORS.RUNTIME_MISSING_SPECIFICATION,
@@ -1178,8 +1180,8 @@ def set_default_spec(version=constants.VERSION.DEFAULT, reload=False):
     reload : bool
         Whether to reload the version.
     """
-    global _default_spec
-    _default_spec = load(version=version, reload=reload)
+    global default_spec
+    default_spec = load(version=version, reload=reload)
 
 # =============================================================================
 # Init
