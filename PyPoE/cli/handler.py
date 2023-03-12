@@ -39,13 +39,18 @@ Documentation
 # =============================================================================
 
 # Python
+from argparse import _SubParsersAction, ArgumentParser # pyright: ignore [reportPrivateUsage]
+import argparse
 import traceback
+from typing import TYPE_CHECKING, Any, TypeAlias
+import configobj
+
 
 # 3rd Party
 from validate import ValidateError
 
 # self
-from PyPoE.cli.config import ConfigError
+from PyPoE.cli.config import ConfigError, ConfigHelper
 from PyPoE.cli.message import console, Msg
 
 # =============================================================================
@@ -60,26 +65,30 @@ __all__ = [
 # Classes
 # =============================================================================
 
+if TYPE_CHECKING:
+    SubparserTAlias: TypeAlias = _SubParsersAction[ArgumentParser]
+else:
+    SubparserTAlias = Any
 
 class BaseHandler:
     """
     Other handlers should inherit this one.
     """
-    def __init__(self, sub_parser, *args, **kwargs):
-        pass
+    def __init__(self, sub_parser: SubparserTAlias, *args: Any, **kwargs: Any):
+        self.parser: ArgumentParser
 
-    def _help(self, *args):
+    def _help(self, *args: Any) -> int:
         self.parser.print_help()
         return 0
 
-    def _show_error(self, e):
+    def _show_error(self, e: Exception) -> int:
         console("%s: %s" % (
             e.__class__.__name__,
             ''.join(e.args)
         ), msg=Msg.error)
         return -1
 
-    def print_sep(self, char='-'):
+    def print_sep(self, char: str='-') -> None:
         console(char*70)
 
 
@@ -92,7 +101,7 @@ class ConfigHandler(BaseHandler):
     .. warning::
         Should be included in any application that uses the cli config
     """
-    def __init__(self, sub_parser, config):
+    def __init__(self, sub_parser: SubparserTAlias, config: ConfigHelper):
         """
         Parameters
         ----------
@@ -130,17 +139,19 @@ class ConfigHandler(BaseHandler):
 
         get_parser = config_sub.add_parser('get', help='Get config option')
         get_parser.set_defaults(func=self.get)
+        keys: list[Any] = config.optionspec.keys()
         get_parser.add_argument(
             'variable',
-            choices=config.optionspec.keys(),
+            choices=keys,
             help='Variable to set',
         )
 
         set_parser = config_sub.add_parser('set', help='Set config option')
         set_parser.set_defaults(func=self.set)
+        keys = config.optionspec.keys()
         set_parser.add_argument(
             'variable',
-            choices=config.optionspec.keys(),
+            choices=keys,
             help='Variable to set',
         )
         set_parser.add_argument(
@@ -149,7 +160,7 @@ class ConfigHandler(BaseHandler):
             help='Value to set',
         )
 
-    def print_debug(self, args):
+    def print_debug(self, args: argparse.Namespace) -> int:
         """
         Prints out the entire config as string.
 
@@ -166,7 +177,7 @@ class ConfigHandler(BaseHandler):
         console(str(self.config))
         return 0
 
-    def print_all(self, args):
+    def print_all(self, args: argparse.Namespace) -> int:
         """
         Prints all currently registered config variables.
 
@@ -180,8 +191,11 @@ class ConfigHandler(BaseHandler):
         int
             success code
         """
-        spec = set(self.config.optionspec.keys())
-        real = set(self.config.option.keys())
+        optionspec_keys: list[Any] = self.config.optionspec.keys()
+        spec = set(optionspec_keys)
+        
+        option_keys: list[Any] = self.config.option.keys()
+        real = set(option_keys)
 
 
         missing = spec.difference(real)
@@ -207,7 +221,7 @@ class ConfigHandler(BaseHandler):
 
         return 0
 
-    def get(self, args):
+    def get(self, args: argparse.Namespace) -> int:
         """
         Prints the config setting for the specified var.
 
@@ -224,7 +238,7 @@ class ConfigHandler(BaseHandler):
         console('Config setting "%s" is currently set to:\n%s' % (args.variable, self.config.option[args.variable]))
         return 0
 
-    def set(self, args):
+    def set(self, args: argparse.Namespace) -> int:
         """
         Sets the specified config setting to the specified value.
 
@@ -262,7 +276,7 @@ class SetupHandler(BaseHandler):
     .. warning::
         Should be included in any application that uses the cli config
     """
-    def __init__(self, sub_parser, config):
+    def __init__(self, sub_parser: SubparserTAlias, config: ConfigHelper): 
         """
         Parameters
         ----------
@@ -283,7 +297,7 @@ class SetupHandler(BaseHandler):
         )
         setup_perform.set_defaults(func=self.setup)
 
-    def setup(self, args):
+    def setup(self, args: argparse.Namespace) -> int:
         """
         Performs the setup (if needed)
 
@@ -299,9 +313,20 @@ class SetupHandler(BaseHandler):
         """
         console('Performing setup. This may take a while - please wait...')
         self.print_sep()
-        for key in self.config['Setup']:
-            section = self.config['Setup'][key]
-            if section['performed']:
+
+        setup_section = self.config['Setup'] # type: ignore
+        if not isinstance(setup_section, configobj.Section):
+            raise TypeError("config option section is not of type configobj.Section")
+        
+        for key in setup_section: # type: ignore
+            if not isinstance(key, str):
+                raise TypeError("key is not of type str")
+            
+            key_section = setup_section[key] # type: ignore
+            if not isinstance(key_section, configobj.Section):
+                raise TypeError("config option section is not of type configobj.Section")
+            
+            if key_section['performed']:
                 continue
             console('Performing setup for: %s' % key)
             try:
@@ -311,6 +336,7 @@ class SetupHandler(BaseHandler):
                 console('Unexpected error occured during setup:\n')
                 console(traceback.format_exc(), msg=Msg.error)
                 continue
-            self.config['Setup'][key]['performed'] = True
+            key_section['performed'] = True
             self.print_sep()
         console('Done.')
+        return 0
