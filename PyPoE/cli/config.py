@@ -108,7 +108,7 @@ class ConfigHelper(ConfigObj):
         self.validator = Validator()
         self.validator.functions.update(functions)
         self._listeners: dict[str, list[Callable[[Any, Any, Any], Any]]] = {}
-        self._setupFunctions: dict[str, Iterable[Callable[[Any], Any]]] = {} 
+        self.setupFunctions: dict[str, Iterable[Callable[[Any], Any]]] = {} 
 
     @property
     def option(self) -> configobj.Section:
@@ -329,7 +329,7 @@ class ConfigHelper(ConfigObj):
         else:
             funcs = (funcs, )
 
-        self._setupFunctions[key] = funcs
+        self.setupFunctions[key] = funcs
 
     def add_setup_listener(self, config_key: str, function: Callable[[Any, Any, Any], Any]) -> None:
         """

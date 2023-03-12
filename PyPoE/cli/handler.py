@@ -305,7 +305,7 @@ class SetupHandler(BaseHandler):
                 continue
             console('Performing setup for: %s' % key)
             try:
-                for func in self.config._setupFunctions[key]:
+                for func in self.config.setupFunctions[key]:
                     func(args)
             except Exception as e:
                 console('Unexpected error occured during setup:\n')
