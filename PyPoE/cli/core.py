@@ -89,7 +89,7 @@ def run(parser: argparse.ArgumentParser, config: ConfigHelper):
     if hasattr(args, 'func'):
         try:
             code = args.func(args)
-        except Exception as e:
+        except Exception:
             console(traceback.format_exc(), msg=Msg.error)
             code = -1
     else:
