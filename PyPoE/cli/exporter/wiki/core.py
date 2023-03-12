@@ -32,6 +32,8 @@ See PyPoE/LICENSE
 # Python
 
 # self
+from argparse import _SubParsersAction, ArgumentParser # pyright: ignore [reportPrivateUsage]
+from typing import Any 
 from PyPoE.cli.message import console, Msg
 from PyPoE.cli.handler import BaseHandler
 from PyPoE.cli.exporter import config
@@ -50,7 +52,7 @@ __all__ = ['WikiHandler']
 
 
 class WikiHandler(BaseHandler):
-    def __init__(self, sub_parser):
+    def __init__(self, sub_parser: "_SubParsersAction[ArgumentParser]") -> None:
         # Config Options
         config.add_option('temp_dir', 'is_directory(exists=True, make_absolute=True)')
         config.add_option('out_dir', 'is_directory(exists=True, make_absolute=True)')
@@ -61,7 +63,7 @@ class WikiHandler(BaseHandler):
 
         # Parser
         self.parser = sub_parser.add_parser('wiki', help='Wiki Exporter')
-        self.parser.set_defaults(func=lambda args: self.parser.print_help())
+        self.parser.set_defaults(func=lambda: self.parser.print_help())
         wiki_sub = self.parser.add_subparsers()
 
         for handler in WIKI_HANDLERS:
@@ -70,14 +72,14 @@ class WikiHandler(BaseHandler):
         for handler in ADMIN_HANDLERS:
             handler(wiki_sub)
 
-    def _ver_dist_changed(self, key, value, old_value):
+    def _ver_dist_changed(self, key: str, value: Any, old_value: Any) -> None:
         if value == old_value:
             return
         config.set_setup_variable('temp_dir', 'performed', False)
         console('Setup needs to be performed due to changes to "%s"' % key,
                 msg=Msg.warning)
 
-    def _setup(self, args):
+    def _setup(self, args: Any) -> None:
         """
         :param args: argparse args passed on
         :return:
