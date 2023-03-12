@@ -51,7 +51,7 @@ __all__ = [
 # =============================================================================
 
 
-def get_content_path():
+def get_content_path() -> str:
     """
     Returns the path to the current content.ggpk based on the specified
     config variables for the version & distributor.
@@ -68,8 +68,11 @@ def get_content_path():
 
         if not paths:
             raise SetupError('No PoE Installation found.')
-
-        return paths[0]
+        
+        path = paths[0] # type: ignore
+        if not isinstance(path, str):
+            raise TypeError("path is not of type str")
+        return path
     else:
         return path
 
