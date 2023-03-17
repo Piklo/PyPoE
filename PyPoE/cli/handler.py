@@ -42,7 +42,7 @@ Documentation
 from argparse import _SubParsersAction, ArgumentParser # pyright: ignore [reportPrivateUsage]
 import argparse
 import traceback
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import Any
 import configobj
 
 
@@ -65,16 +65,11 @@ __all__ = [
 # Classes
 # =============================================================================
 
-if TYPE_CHECKING:
-    SubparserTAlias: TypeAlias = _SubParsersAction[ArgumentParser]
-else:
-    SubparserTAlias = Any
-
 class BaseHandler:
     """
     Other handlers should inherit this one.
     """
-    def __init__(self, sub_parser: SubparserTAlias, *args: Any, **kwargs: Any):
+    def __init__(self, sub_parser: "_SubParsersAction[ArgumentParser]", *args: Any, **kwargs: Any) -> None:
         self.parser: ArgumentParser
 
     def _help(self, *args: Any) -> int:
@@ -101,7 +96,7 @@ class ConfigHandler(BaseHandler):
     .. warning::
         Should be included in any application that uses the cli config
     """
-    def __init__(self, sub_parser: SubparserTAlias, config: ConfigHelper):
+    def __init__(self, sub_parser: "_SubParsersAction[ArgumentParser]", config: ConfigHelper):
         """
         Parameters
         ----------
@@ -276,7 +271,7 @@ class SetupHandler(BaseHandler):
     .. warning::
         Should be included in any application that uses the cli config
     """
-    def __init__(self, sub_parser: SubparserTAlias, config: ConfigHelper): 
+    def __init__(self, sub_parser: "_SubParsersAction[ArgumentParser]", config: ConfigHelper): 
         """
         Parameters
         ----------

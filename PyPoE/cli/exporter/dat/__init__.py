@@ -35,7 +35,6 @@ See PyPoE/LICENSE
 
 # self
 from argparse import _SubParsersAction, ArgumentParser # pyright: ignore [reportPrivateUsage]
-from typing import TYPE_CHECKING, TypeAlias, Any
 from PyPoE.cli.exporter.dat.parsers.json import JSONExportHandler
 
 # =============================================================================
@@ -47,17 +46,13 @@ __all__ = ['DatHandler']
 # =============================================================================
 # Classes
 # =============================================================================
-if TYPE_CHECKING:
-    SubparserTAlias: TypeAlias = _SubParsersAction[ArgumentParser]
-else:
-    SubparserTAlias = Any
 
 class DatHandler:
     """
 
     :type sql: argparse.ArgumentParser
     """
-    def __init__(self, sub_parser: SubparserTAlias):
+    def __init__(self, sub_parser: "_SubParsersAction[ArgumentParser]"):
         """
 
         :type sub_parser: argparse._SubParsersAction
